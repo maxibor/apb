@@ -1,0 +1,99 @@
+#!/usr/local/bin/python3
+
+import pandas as pd
+import numpy as np
+import argparse
+
+def get_args():
+    '''
+    This function parses and return arguments passed in
+    '''
+    parser = argparse.ArgumentParser(
+        prog='APB: A Project Balloter',
+        description='Choose a project for each student given a ranked project list.')
+    parser.add_argument('file', help=".csv entry file of ranked project list per student")
+    parser.add_argument(
+        '-maxRank',
+        default=3,
+        type=int,
+        help="Worst Rank acceptable for all student. Default = 3")
+    parser.add_argument(
+        '-maxStud',
+        default=2,
+        type=int,
+        help="Maximum number of students per project. Default = 2")
+    args = parser.parse_args()
+
+    myfile = args.file
+    maxRank = args.maxRank
+    maxStud = args.maxStud
+
+    return(myfile, maxRank, maxStud)
+
+def proj_attributor (df, max_student_proj):
+    '''
+    df: A pandas dataframe from a formatted csv file , see readme.
+    max_student_proj (int): maximum number of students per project
+    returns:
+        stud_choice_rank(dict) -> Rank of picked project in student's ranking
+        studProj(dict) -> Picked project for each student.
+    '''
+    stud_choice_rank = {}
+    df2 = df
+    projCount = {}
+    for project in list(df2.index):
+        projCount[project] = 0
+    studProj = {}
+    cycle = 1
+    while len(studProj.keys()) != len(df.columns):
+        nindex = len(df2.index)
+        ncol = len(df2.columns)
+        for line in range(0,nindex):
+            #print(df2.iloc[line,:])
+            prio = np.where(df2.iloc[line,:] == cycle)[0]
+            if len(prio) > 0:
+                choice = np.random.choice(df2.columns[prio])
+                #print("choice",choice)
+                studProj[choice] = df2.index[line]
+                if studProj[choice]:
+                    if  projCount[df2.index[line]] < max_student_proj:
+                        projCount[df2.index[line]] = projCount[df2.index[line]] +1
+                        df2 = df2.drop(choice, axis=1)
+        for proj in list(df2.index):
+            if projCount[proj] >= max_student_proj :
+                #print (df2.index, proj)
+                df2 = df2.drop(proj, axis = 0)
+        cycle = cycle + 1
+    #print(projCount)
+    for key in sorted(studProj.keys()):
+        #print(key, "-", studProj[key], "- choice n° ",df.loc[:,key][studProj[key]])
+        stud_choice_rank[key] = int(df.loc[:,key][studProj[key]])
+    return([stud_choice_rank, studProj])
+
+def notGoodEnough(maxRank, df, max_student_proj):
+    '''
+    maxRank: maximum admissible rank (for all students) to output result
+    df: A pandas dataframe from a formatted csv file , see readme.
+    max_student_proj (int): maximum number of students per project
+    prints students picked project and its rank if worst Rank < maxRank, else
+    prints "no solution"
+    '''
+    i = 0
+    f = True
+    while True:
+        res = proj_attributor(df, max_student_proj)
+        if max(res[0].values()) <= maxRank:
+            break
+        i = i + 1
+        if i > 99 :
+            print("no solution")
+            f = False
+            break
+    if f:
+        for key in sorted(res[1].keys()):
+            print(key,":",res[1][key], " - Choice n°", res[0][key])
+
+if __name__ == '__main__':
+    myfile, maxRank, maxStud = get_args()
+    df = pd.read_csv(myfile, index_col=0, header=0)
+    notGoodEnough(maxRank=maxRank, df = df , max_student_proj = maxStud)
