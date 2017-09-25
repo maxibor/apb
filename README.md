@@ -39,8 +39,8 @@ optional arguments:
 ```
 
 ## CSV file formatting Example
-Column names contain student names
-Row names contain project names
+Column names contain student names.  
+Row names contain project names.  
 Cells contains ranking of each project by each student.
 
 |            | student_1 | student_2 | student_3 | student_4 | student_5 | student_6 | student_7 | student_8 | student_9 | student_10 | student_11 | student_12 | student_13 | student_14 | student_15 | student_16 |
