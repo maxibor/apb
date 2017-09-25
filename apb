@@ -49,11 +49,9 @@ def proj_attributor (df, max_student_proj):
         nindex = len(df2.index)
         ncol = len(df2.columns)
         for line in range(0,nindex):
-            #print(df2.iloc[line,:])
             prio = np.where(df2.iloc[line,:] == cycle)[0]
             if len(prio) > 0:
                 choice = np.random.choice(df2.columns[prio])
-                #print("choice",choice)
                 studProj[choice] = df2.index[line]
                 if studProj[choice]:
                     if  projCount[df2.index[line]] < max_student_proj:
@@ -61,12 +59,9 @@ def proj_attributor (df, max_student_proj):
                         df2 = df2.drop(choice, axis=1)
         for proj in list(df2.index):
             if projCount[proj] >= max_student_proj :
-                #print (df2.index, proj)
                 df2 = df2.drop(proj, axis = 0)
         cycle = cycle + 1
-    #print(projCount)
     for key in sorted(studProj.keys()):
-        #print(key, "-", studProj[key], "- choice n° ",df.loc[:,key][studProj[key]])
         stud_choice_rank[key] = int(df.loc[:,key][studProj[key]])
     return([stud_choice_rank, studProj])
 
