@@ -1,7 +1,7 @@
 <img src="./img/logo.png" width="300">
 
 # APB : **A** **P**roject **B**alloter
-*A specific [multi-objective optimization](https://en.wikipedia.org/wiki/Multi-objective_optimization) short program.*  
+*A specific [stable matching problem solver](https://en.wikipedia.org/wiki/Stable_marriage_problem) short program.*  
 Given a specially formatted `.csv` file, APB selects for each student the best project according to the voted rank, while trying to be fair with every other student.
 
 
